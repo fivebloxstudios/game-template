@@ -62,11 +62,16 @@ function Connect-GitHub {
 }
 
 function New-Game {
+	param([switch]$Migrating)
 	$name = (Read-Host 'Game folder name, lowercase with dashes (like box-for-eggs)').Trim().ToLower()
 	if ($name -notmatch '^[a-z0-9][a-z0-9-]*$') { throw 'Use only lowercase letters, numbers and dashes.' }
 
 	Write-Host ''
-	Write-Host 'Create the experience first: publish a new place to the FiveBlox group and turn on Team Create.'
+	if ($Migrating) {
+		Write-Host 'Use your existing game. This step does not change anything in it. Its start place becomes the Team place.'
+	} else {
+		Write-Host 'Create the experience first: publish a new place to the FiveBlox group and turn on Team Create.'
+	}
 	$universe = Read-PlaceNumber 'Universe ID (Creator Hub > the experience > Overview, in the page address)'
 	$teamPlace = Read-PlaceNumber 'Team place ID (the start place of that experience)'
 
@@ -168,7 +173,13 @@ New-Item -ItemType Directory -Force $ProjectsFolder | Out-Null
 Write-Host ''
 Write-Host '  1. Join a game that already exists'
 Write-Host '  2. Create a brand new game'
-$projectPath = if ((Read-Host 'Type 1 or 2') -eq '2') { New-Game } else { Join-Game }
+Write-Host '  3. Move a game we already have onto this workflow'
+$journey = Read-Host 'Type 1, 2 or 3'
+$projectPath = switch ($journey) {
+	'2' { New-Game }
+	'3' { New-Game -Migrating }
+	default { Join-Game }
+}
 Initialize-Project $projectPath
 
 Write-Host ''
@@ -176,4 +187,8 @@ Write-Host "All set. Your project is in $projectPath"
 Write-Host 'Last steps, once per PC:'
 Write-Host '  1. Restart Roblox Studio.'
 Write-Host '  2. In Studio: Assistant > ... > Manage MCP Servers > turn on Enable Studio as MCP server.'
-Write-Host '  3. Open that folder in Claude Code and type /start'
+if ($journey -eq '3') {
+	Write-Host '  3. Open that folder in Claude Code and type /migrate'
+} else {
+	Write-Host '  3. Open that folder in Claude Code and type /start'
+}

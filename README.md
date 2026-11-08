@@ -8,7 +8,9 @@ Paste this into PowerShell, then follow the questions:
 powershell -ExecutionPolicy Bypass -c "irm https://raw.githubusercontent.com/fivebloxstudios/game-template/main/setup.ps1 | iex"
 ```
 
-Choose **1** to join a game or **2** to create a new one. Log in with your own GitHub account when the browser opens. Run it again whenever you join another game.
+Choose **1** to join a game, **2** to create a new one, or **3** to move a game you already have onto this workflow. Log in with your own GitHub account when the browser opens. Run it again whenever you join another game.
+
+Moving an existing game is done once, by one person. Add a sub place for each teammate in the game's Asset Manager, choose **3**, then type `/migrate` in Claude Code and follow along.
 
 ## Every day
 

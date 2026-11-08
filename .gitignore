@@ -6,6 +6,7 @@ ServerPackages/
 .env
 roblox.yml
 .claude/settings.local.json
+.migration/
 
 # Place files (binary; Roblox version history is the backup)
 *.rbxl
