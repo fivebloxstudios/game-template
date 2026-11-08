@@ -1,0 +1,16 @@
+default.project.json
+release.project.json
+sourcemap.json
+Packages/
+ServerPackages/
+.env
+roblox.yml
+.claude/settings.local.json
+
+# Place files (binary; Roblox version history is the backup)
+*.rbxl
+*.rbxlx
+*.rbxl.lock
+*.rbxlx.lock
+*.rbxm
+*.rbxmx

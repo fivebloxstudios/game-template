@@ -1,0 +1,26 @@
+{
+	"source": [
+		"src"
+	],
+	"luau": {
+		"output": "default.project.json",
+		"build": "src"
+	},
+	"project": {
+		"name": "game-template",
+		"servePlaceIds": [],
+		"tree": {
+			"$className": "DataModel",
+			"ServerScriptService": {
+				"packages": {
+					"$path": "ServerPackages"
+				}
+			},
+			"ReplicatedStorage": {
+				"packages": {
+					"$path": "Packages"
+				}
+			}
+		}
+	}
+}

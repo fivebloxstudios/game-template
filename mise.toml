@@ -1,0 +1,82 @@
+[env]
+_.file = ".env" # not in git. Holds MY_PLACE_ID, this person's test place.
+UNIVERSE_ID = "0"
+TEAM_PLACE_ID = "0"
+
+[tools]
+"github:LDGerrits/rogen" = "1.4.4"
+"github:rojo-rbx/rojo" = "7.6.1"
+"github:UpliftGames/wally" = "0.3.2"
+"github:JohnnyMorganz/wally-package-types" = "1.6.2"
+"github:Kampfkarren/selene" = "0.32.0"
+"github:JohnnyMorganz/StyLua" = "2.6.0"
+
+[tasks.install]
+description = "Install Wally packages"
+run = "wally install"
+
+[tasks.project]
+description = "Generate default.project.json"
+depends = ["install"]
+run = "rogen"
+
+[tasks.sourcemap]
+description = "Generate Rojo sourcemap"
+depends = ["project"]
+run = "rojo sourcemap default.project.json --output sourcemap.json"
+
+[tasks.types]
+description = "Generate wally package types"
+depends = ["sourcemap"]
+run = "wally-package-types --sourcemap sourcemap.json Packages/"
+
+[tasks."watch:rogen"]
+description = "Watch and regenerate default.project.json"
+run = "rogen watch"
+hide = true
+
+[tasks."watch:rojo"]
+description = "Start Rojo live sync server"
+run = "rojo serve"
+hide = true
+
+[tasks.dev]
+description = "Prepare the project and start development"
+alias = "serve"
+depends = ["types"]
+run = [{ tasks = ["watch:rogen", "watch:rojo"] }]
+
+[tasks.format]
+description = "Format the code"
+run = "stylua src"
+
+[tasks.check]
+description = "Lint the code and prove the place builds"
+depends = ["project"]
+run = ["selene src", "rojo build default.project.json --output build.rbxl"]
+
+[tasks.open]
+description = "Open your test place in Studio"
+shell = "powershell -NoProfile -Command"
+run = 'Start-Process "roblox-studio:1+launchmode:edit+task:EditPlace+placeId:$env:MY_PLACE_ID+universeId:$env:UNIVERSE_ID"'
+
+[tasks."open:team"]
+description = "Open the shared Team Create place in Studio"
+shell = "powershell -NoProfile -Command"
+run = 'Start-Process "roblox-studio:1+launchmode:edit+task:EditPlace+placeId:$env:TEAM_PLACE_ID+universeId:$env:UNIVERSE_ID"'
+
+[tasks.release]
+description = "Sync clean main into the Team place (one person at a time)"
+depends = ["project"]
+shell = "powershell -NoProfile -Command"
+run = '''
+$ErrorActionPreference = "Stop"
+git fetch origin main
+if ((git branch --show-current) -ne "main") { throw "Switch to main first." }
+if (git status --porcelain) { throw "You have uncommitted changes." }
+if ((git rev-parse HEAD) -ne (git rev-parse origin/main)) { throw "main is not up to date with GitHub. Run git pull." }
+$project = Get-Content default.project.json -Raw
+$project = $project -replace '"servePlaceIds":\s*\[[^\]]*\]', ('"servePlaceIds": [' + $env:TEAM_PLACE_ID + ']')
+[IO.File]::WriteAllText("$PWD\release.project.json", $project)
+rojo serve release.project.json
+'''

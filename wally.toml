@@ -1,0 +1,17 @@
+[package]
+name = "fiveblox/game-template"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+
+[dependencies]
+charm = "littensy/charm@=0.11.0"
+charmsync = "littensy/charm-sync@=0.4.0"
+GreenTea = "corecii/greentea@0.4.11"
+Janitor = "howmanysmall/janitor@1.18.3"
+Signal = "stravant/goodsignal@0.3.1"
+vide = "devsarim/vide@0.4.7"
+videcharm = "littensy/vide-charm@=0.4.0"
+
+[server-dependencies]
+ProfileStore = "b1ntran/profilestore@1.0.4"
