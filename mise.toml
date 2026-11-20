@@ -10,6 +10,7 @@ TEAM_PLACE_ID = "0"
 "github:JohnnyMorganz/wally-package-types" = "1.6.2"
 "github:Kampfkarren/selene" = "0.32.0"
 "github:JohnnyMorganz/StyLua" = "2.6.0"
+"github:JohnnyMorganz/luau-lsp" = "1.70.1"
 
 [tasks.install]
 description = "Install Wally packages"
@@ -54,6 +55,19 @@ run = "stylua src"
 description = "Lint the code and prove the place builds"
 depends = ["project"]
 run = ["selene src", "rojo build default.project.json --output build.rbxl"]
+
+[tasks."typecheck:definitions"]
+description = "Download Roblox type definitions matching the pinned luau-lsp"
+hide = true
+sources = ["mise.toml"]
+outputs = [".luau-lsp/globalTypes.d.luau"]
+run = "curl -sSfL --create-dirs -o .luau-lsp/globalTypes.d.luau https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/1.70.1/scripts/globalTypes.d.luau"
+
+[tasks.typecheck]
+description = "Strict Luau type check of src (new solver, as in Studio)"
+# after types: install re-runs wally, which drops the package type exports that types writes back
+depends = ["types", "typecheck:definitions"]
+run = "luau-lsp analyze --sourcemap=sourcemap.json --definitions=@roblox=.luau-lsp/globalTypes.d.luau --base-luaurc=.luaurc --flag:LuauSolverV2=true src"
 
 [tasks.open]
 description = "Open your test place in Studio"

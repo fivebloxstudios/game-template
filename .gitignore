@@ -1,6 +1,7 @@
 default.project.json
 release.project.json
 sourcemap.json
+.luau-lsp/
 Packages/
 ServerPackages/
 .env
