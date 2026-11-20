@@ -8,4 +8,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-      - run: mise run check
+      # mise.toml loads the person's .env (MY_PLACE_ID), which is never in git
+      - run: touch .env
+      - name: Lint and build
+        run: mise run check
+      - name: Type check
+        run: mise run typecheck
