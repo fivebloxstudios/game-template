@@ -3,7 +3,7 @@ const function waitTimeout(signal: RBXScriptSignal, timeout: number)
 
 	task.defer(function()
 		local queued: thread, connection: RBXScriptConnection
-		
+
 		queued = task.delay(timeout, function()
 			connection:Disconnect()
 			coroutine.resume(thread, false)

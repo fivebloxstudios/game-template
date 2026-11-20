@@ -75,8 +75,10 @@ git fetch origin main
 if ((git branch --show-current) -ne "main") { throw "Switch to main first." }
 if (git status --porcelain) { throw "You have uncommitted changes." }
 if ((git rev-parse HEAD) -ne (git rev-parse origin/main)) { throw "main is not up to date with GitHub. Run git pull." }
-$project = Get-Content default.project.json -Raw
-$project = $project -replace '"servePlaceIds":\s*\[[^\]]*\]', ('"servePlaceIds": [' + $env:TEAM_PLACE_ID + ']')
-[IO.File]::WriteAllText("$PWD\release.project.json", $project)
+if (-not ($env:TEAM_PLACE_ID -match '^[1-9][0-9]*$')) { throw "Set TEAM_PLACE_ID in mise.toml before releasing." }
+# lock the release server to the Team place only (dev serving stays open to any place)
+$project = Get-Content default.project.json -Raw | ConvertFrom-Json
+$project | Add-Member -NotePropertyName servePlaceIds -NotePropertyValue @([long]$env:TEAM_PLACE_ID) -Force
+[IO.File]::WriteAllText("$PWD\release.project.json", ($project | ConvertTo-Json -Depth 100))
 rojo serve release.project.json
 '''

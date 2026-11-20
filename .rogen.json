@@ -8,7 +8,6 @@
 	},
 	"project": {
 		"name": "game-template",
-		"servePlaceIds": [],
 		"tree": {
 			"$className": "DataModel",
 			"ServerScriptService": {
