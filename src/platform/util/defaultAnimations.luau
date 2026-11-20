@@ -29,36 +29,35 @@ local function findPath(instance: Instance, path: string): Instance?
 end
 
 type characterAnimation =
-	"cheer" |
-	"climb" |
-	"dance1animation1" |
-	"dance1animation2" |
-	"dance1animation3" |
-	"dance2animation1" |
-	"dance2animation2" |
-	"dance2animation3" |
-	"dance3animation1" |
-	"dance3animation2" |
-	"dance3animation3" |
-	"fall" |
-	"idleanimation1" |
-	"idleanimation2" |
-	"jump" |
-	"laugh" |
-	"point" |
-	"sit" |
-	"toollunge" |
-	"toolnone" |
-	"toolslash" |
-	"wave" |
-	"run" |
-	"swim" |
-	"swimidle" |
-	"walk" |
-	"mood"
+	"cheer"
+	| "climb"
+	| "dance1animation1"
+	| "dance1animation2"
+	| "dance1animation3"
+	| "dance2animation1"
+	| "dance2animation2"
+	| "dance2animation3"
+	| "dance3animation1"
+	| "dance3animation2"
+	| "dance3animation3"
+	| "fall"
+	| "idleanimation1"
+	| "idleanimation2"
+	| "jump"
+	| "laugh"
+	| "point"
+	| "sit"
+	| "toollunge"
+	| "toolnone"
+	| "toolslash"
+	| "wave"
+	| "run"
+	| "swim"
+	| "swimidle"
+	| "walk"
+	| "mood"
 
-
-local nameToPath: {[characterAnimation]: string} = {
+local nameToPath: { [characterAnimation]: string } = {
 	["cheer"] = "Animate.cheer.CheerAnim",
 	["climb"] = "Animate.climb.ClimbAnim",
 	["dance1animation1"] = "Animate.dance.Animation1",
@@ -88,22 +87,21 @@ local nameToPath: {[characterAnimation]: string} = {
 	["mood"] = "Animate.mood.Animation1",
 }
 
-
 return {
 	find = function(player: Player, name: characterAnimation): string?
 		local character = player.Character
 		if not character then
 			return nil
 		end
-		
+
 		local animation = findPath(character, nameToPath[name])
 		if not animation or not animation:IsA("Animation") then
 			return nil
 		end
-		
+
 		return animation.AnimationId
 	end,
-	
+
 	waitFor = function(player: Player, name: characterAnimation, timeOut: number?): string?
 		local character = player.Character
 		if not character then
@@ -117,23 +115,23 @@ return {
 
 		return animation.AnimationId
 	end,
-	
+
 	tryUpdate = function(player: Player, name: characterAnimation, animationId: string, wait: boolean?)
 		local character = player.Character
 		if not character then
 			return
 		end
-		
+
 		local path = nameToPath[name]
 		if not path then
 			return
 		end
 
-		local animation = wait and  waitPath(character, nameToPath[name]) or findPath(character, nameToPath[name])
+		local animation = wait and waitPath(character, nameToPath[name]) or findPath(character, nameToPath[name])
 		if not animation or not animation:IsA("Animation") then
 			return
 		end
-		
+
 		animation.AnimationId = animationId
 	end,
 }

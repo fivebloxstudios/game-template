@@ -3,12 +3,12 @@ const RunService = game:GetService("RunService")
 type cleanup = () -> ()
 
 local prevTimestamp = 0
-local callbacks: {[(number, cleanup) -> ()]: {rate: number, prev: number}} = {}
+local callbacks: { [(number, cleanup) -> ()]: { rate: number, prev: number } } = {}
 
 const function cleanupFactory(k: any): cleanup
 	return function()
 		callbacks[k] = nil
-	end	
+	end
 end
 
 RunService.Heartbeat:Connect(function()
@@ -16,9 +16,9 @@ RunService.Heartbeat:Connect(function()
 	if timestamp == prevTimestamp then
 		return
 	end
-	
+
 	prevTimestamp = timestamp
-	
+
 	for callback, info in callbacks do
 		const diff = timestamp - info.prev
 		if diff >= info.rate then

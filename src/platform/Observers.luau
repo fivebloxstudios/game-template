@@ -193,23 +193,23 @@ end
 local function observeAttribute<T>(instance: Instance, attribute: string, callback: (T) -> Cleanup?): Cleanup
 	return createObserver(function(observer: Observer<T>)
 		local lastValue: T? = instance:GetAttribute(attribute)
-		
+
 		if lastValue then
 			observer.add(lastValue, callback, lastValue)
 		end
-		
+
 		local attributeChanged = instance:GetAttributeChangedSignal(attribute):Connect(function()
 			if lastValue then
 				observer.remove(lastValue)
 			end
-			
+
 			local newValue: T? = instance:GetAttribute(attribute)
 			if newValue then
 				lastValue = newValue
 				observer.add(newValue, callback, newValue)
 			end
 		end)
-		
+
 		return function()
 			attributeChanged:Disconnect()
 		end
@@ -218,9 +218,9 @@ end
 
 local function observeChildren(parent: Instance, callback: (Instance) -> Cleanup?): Cleanup
 	return createObserver(function(observer: Observer<Instance>)
-		local destroyingConnections: {[Instance]: RBXScriptConnection} = {}
-		local ancestryChangedConnections: {[Instance]: RBXScriptConnection} = {}
-		
+		local destroyingConnections: { [Instance]: RBXScriptConnection } = {}
+		local ancestryChangedConnections: { [Instance]: RBXScriptConnection } = {}
+
 		local function cleanChild(child: Instance)
 			local destroying = destroyingConnections[child]
 			if destroying then
@@ -234,7 +234,7 @@ local function observeChildren(parent: Instance, callback: (Instance) -> Cleanup
 				ancestryChangedConnections[child] = nil
 			end
 		end
-		
+
 		local function registerChild(child: Instance)
 			if destroyingConnections[child] or ancestryChangedConnections[child] then
 				return
@@ -256,7 +256,7 @@ local function observeChildren(parent: Instance, callback: (Instance) -> Cleanup
 
 			observer.add(child, callback, child)
 		end
-		
+
 		local childAdded = parent.ChildAdded:Connect(registerChild)
 
 		for _, instance in parent:GetChildren() do
@@ -268,12 +268,12 @@ local function observeChildren(parent: Instance, callback: (Instance) -> Cleanup
 				connection:Disconnect()
 				destroyingConnections[key] = nil
 			end
-			
+
 			for key, connection in ancestryChangedConnections do
 				connection:Disconnect()
 				ancestryChangedConnections[key] = nil
 			end
-			
+
 			childAdded:Disconnect()
 		end
 	end)
